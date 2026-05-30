@@ -1,0 +1,417 @@
+/* =========================================================
+   STAN'S LOOT DROP — styles
+   ========================================================= */
+
+:root {
+  --bg: #0b0b14;
+  --bg-2: #14142b;
+  --ink: #f7f7ff;
+  --muted: #a8a8c4;
+  --accent: #ffcc00;
+  --accent-2: #ff3b6b;
+  --good: #21d07a;
+  --common: #b0b8c4;
+  --rare: #4aa8ff;
+  --epic: #b06bff;
+  --legendary: #ff9a1f;
+  --mythic: #ff3b6b;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Fredoka", system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- background grid ---------- */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at top,
+      rgba(176, 107, 255, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      rgba(255, 59, 107, 0.15),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #0b0b14 0%, #14142b 100%);
+  z-index: -2;
+}
+.bg-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: -1;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  transform: rotate(-2deg);
+  box-shadow: var(--shadow);
+}
+
+.hero h1 {
+  font-family: "Bungee", sans-serif;
+  font-size: clamp(54px, 11vw, 130px);
+  margin: 18px 0 10px;
+  line-height: 0.95;
+  letter-spacing: 1px;
+  text-shadow:
+    4px 4px 0 var(--accent-2),
+    8px 8px 0 rgba(0, 0, 0, 0.5);
+}
+
+.hero-accent {
+  color: var(--accent);
+  display: inline-block;
+  animation: wobble 3s ease-in-out infinite;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.tagline {
+  font-size: clamp(16px, 2.2vw, 20px);
+  color: var(--muted);
+  margin: 16px 0 28px;
+  line-height: 1.5;
+}
+.tagline b {
+  color: var(--ink);
+}
+
+.cta {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #000;
+  font-family: "Bungee", sans-serif;
+  font-size: 18px;
+  padding: 14px 28px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease;
+}
+.cta:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* ---------- scrolling strip ---------- */
+.strip {
+  background: var(--accent);
+  color: #000;
+  font-family: "Bungee", sans-serif;
+  font-size: 14px;
+  padding: 10px 0;
+  display: flex;
+  gap: 36px;
+  white-space: nowrap;
+  overflow: hidden;
+  transform: rotate(-1.2deg);
+  margin: 30px -10px;
+  box-shadow: var(--shadow);
+}
+.strip span {
+  display: inline-block;
+  animation: marquee 22s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+/* ---------- shop ---------- */
+.shop {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 20px 80px;
+}
+.shop-title {
+  font-family: "Bungee", sans-serif;
+  font-size: clamp(36px, 6vw, 60px);
+  text-align: center;
+  margin: 0;
+  text-shadow: 3px 3px 0 var(--accent-2);
+}
+.shop-sub {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 8px;
+  margin-bottom: 36px;
+  font-size: 17px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+/* ---------- product card ---------- */
+.card {
+  background: linear-gradient(180deg, #1c1c34, #14142b);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, transparent, transparent);
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-6px) rotate(-0.3deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  border-color: var(--accent);
+}
+
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.card:hover .card-img img {
+  transform: scale(1.05) rotate(-1deg);
+}
+
+.tier {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: "Bungee", sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #000;
+  box-shadow: var(--shadow);
+}
+.tier-COMMON { background: var(--common); }
+.tier-RARE { background: var(--rare); color: #fff; }
+.tier-EPIC { background: var(--epic); color: #fff; }
+.tier-LEGENDARY { background: var(--legendary); }
+.tier-MYTHIC {
+  background: linear-gradient(135deg, var(--mythic), #ff8800);
+  color: #fff;
+  animation: glow 1.6s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 59, 107, 0); }
+  50% { box-shadow: 0 0 18px rgba(255, 59, 107, 0.8); }
+}
+
+.card-name {
+  font-family: "Bungee", sans-serif;
+  font-size: 18px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.card-desc {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+}
+
+.card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.price {
+  font-family: "Bungee", sans-serif;
+  font-size: 22px;
+  color: var(--accent);
+}
+
+.buy-btn {
+  background: linear-gradient(135deg, var(--good), #15a85e);
+  color: #002;
+  font-family: "Bungee", sans-serif;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.2s ease;
+  box-shadow: var(--shadow);
+}
+.buy-btn:hover {
+  transform: scale(1.06) rotate(-1deg);
+  filter: brightness(1.1);
+}
+.buy-btn:active {
+  transform: scale(0.96);
+}
+
+/* ---------- about ---------- */
+.about {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+  text-align: center;
+}
+.about h2 {
+  font-family: "Bungee", sans-serif;
+  font-size: clamp(28px, 5vw, 46px);
+  margin: 0 0 30px;
+  text-shadow: 3px 3px 0 var(--accent);
+}
+.about-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.about-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 22px;
+}
+.about-card .emoji {
+  font-size: 44px;
+}
+.about-card h3 {
+  font-family: "Bungee", sans-serif;
+  font-size: 18px;
+  margin: 6px 0 8px;
+}
+.about-card p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ---------- ideas ---------- */
+.ideas {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px 60px;
+  text-align: center;
+}
+.ideas h2 {
+  font-family: "Bungee", sans-serif;
+  font-size: clamp(24px, 4.5vw, 40px);
+  margin: 0 0 14px;
+  text-shadow: 3px 3px 0 var(--accent-2);
+}
+.ideas p {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+.ideas-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  text-align: left;
+}
+.ideas-list li {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border-left: 4px solid var(--accent);
+  font-size: 15px;
+}
+
+/* ---------- footer ---------- */
+footer {
+  text-align: center;
+  padding: 40px 20px 60px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent);
+  color: #000;
+  font-family: "Bungee", sans-serif;
+  padding: 12px 22px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast:not(.hidden) {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast-emoji { font-size: 22px; }
+.hidden { opacity: 0; }
