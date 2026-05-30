@@ -32,6 +32,66 @@ def caption_from_filename(path):
     return stem.strip() or "Untitled"
 
 
+def find_sibling_logo(image_path):
+    """Return path of a Logo.webp/png/jpg next to the icon, if any (case-insensitive)."""
+    parent = os.path.dirname(os.path.abspath(image_path))
+    target = os.path.abspath(image_path)
+    try:
+        entries = os.listdir(parent)
+    except OSError:
+        return None
+    for name in entries:
+        stem, ext = os.path.splitext(name)
+        if stem.lower() == "logo" and ext.lower() in (".webp", ".png", ".jpg", ".jpeg"):
+            candidate = os.path.join(parent, name)
+            if os.path.abspath(candidate) != target:
+                return candidate
+    return None
+
+
+def paste_logo(canvas, logo_path, content_box, band_height):
+    """Paste a rotated game logo as a corner sticker in the top-right of the panel.
+
+    The logo is sized to fit within ``band_height`` (pre-rotation), rotated 45°
+    clockwise, given a gravity-aligned drop shadow, and placed inside the
+    panel's top-right with a small margin so it stays clear of the rounded
+    corner.
+    """
+    logo = Image.open(logo_path).convert("RGBA")
+    x0, y0, x1, _ = content_box
+    avail_w = x1 - x0
+    pad_x = int(avail_w * 0.08)
+    pad_y = int(band_height * 0.12)
+    max_w = max(1, avail_w - 2 * pad_x)
+    max_h = max(1, band_height - 2 * pad_y)
+    scale = min(max_w / logo.width, max_h / logo.height)
+    new_size = (max(1, int(logo.width * scale)), max(1, int(logo.height * scale)))
+    logo = logo.resize(new_size, Image.LANCZOS)
+    logo = logo.filter(ImageFilter.UnsharpMask(radius=2, percent=120, threshold=2))
+
+    # No rotation — keep the logo upright as a corner badge.
+    rotated = logo
+
+    # Position inside the panel's top-right with margin clear of the rounded corner.
+    margin = int(avail_w * 0.015)
+    pos = (x1 - rotated.width - margin, y0 + margin)
+
+    # Drop shadow built from the rotated logo so its outline still matches
+    # what the viewer sees, but offset down-right (gravity) regardless of rotation.
+    shadow_offset = max(2, int(rotated.height * 0.04))
+    shadow_blur = max(3, int(rotated.height * 0.05))
+    shadow_alpha = rotated.split()[-1].point(lambda v: int(v * 0.75))
+    shadow_rgb = Image.new("RGB", rotated.size, (0, 0, 0))
+    shadow = Image.merge("RGBA", (*shadow_rgb.split(), shadow_alpha))
+
+    shadow_canvas = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    shadow_canvas.alpha_composite(shadow, dest=(pos[0] + shadow_offset, pos[1] + shadow_offset))
+    shadow_canvas = shadow_canvas.filter(ImageFilter.GaussianBlur(radius=shadow_blur))
+    canvas.alpha_composite(shadow_canvas)
+
+    canvas.alpha_composite(rotated, dest=pos)
+
+
 def find_font(size):
     candidates = [
         "/System/Library/Fonts/Supplemental/Impact.ttf",
@@ -252,7 +312,7 @@ def draw_caption_text(canvas, text, content_box, caption_height, text_color):
 
 
 def build_card(image_path, caption, output_path, size=512, supersample=4, print_cm=3.2,
-               webp_quality=80):
+               webp_quality=80, logo_image_path=None):
     # Render everything at supersample*size, then downscale with Lanczos for AA.
     render_size = size * supersample
     border = max(12, size // 20) * supersample
@@ -275,7 +335,13 @@ def build_card(image_path, caption, output_path, size=512, supersample=4, print_
     draw_gradient_panel(canvas, content_box, panel_mask, panel_top, panel_bottom)
     draw_caption_strip(canvas, content_box, caption_height, panel_mask, caption_color)
     draw_groove(canvas, content_box, radius, groove)
+
+    # Icon uses the full panel; the logo (if any) is overlaid as a corner sticker.
     paste_icon(canvas, image_path, content_box, caption_height, icon_offset)
+    if logo_image_path:
+        avail_h = (content_box[3] - content_box[1]) - caption_height
+        logo_band_h = int(avail_h * 0.24)  # 2/3 of the previous (0.36) band size
+        paste_logo(canvas, logo_image_path, content_box, logo_band_h)
     draw_caption_text(canvas, caption, content_box, caption_height, text_color)
 
     if supersample != 1:
@@ -308,6 +374,8 @@ def main():
                    help="Skip the .webp web-optimized output (PNG only)")
     p.add_argument("--webp-quality", type=int, default=80,
                    help="WebP quality 1-100 (default 80, visually lossless for these renders)")
+    p.add_argument("--logo", help="Path to game logo (auto-detected as Logo.{webp,png,jpg} next to icon)")
+    p.add_argument("--no-logo", action="store_true", help="Disable logo overlay even if one is auto-detected")
     args = p.parse_args()
 
     if not os.path.exists(args.image):
@@ -317,9 +385,11 @@ def main():
     output = args.output or os.path.splitext(args.image)[0] + "_card.png"
     caption = args.caption or caption_from_filename(args.image)
     webp_quality = None if args.no_webp else args.webp_quality
+    logo_path = None if args.no_logo else (args.logo or find_sibling_logo(args.image))
     png_path, webp_path = build_card(
         args.image, caption, output,
         size=args.size, print_cm=args.print_cm, webp_quality=webp_quality,
+        logo_image_path=logo_path,
     )
     print(f"wrote {png_path}")
     if webp_path:

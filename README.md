@@ -28,35 +28,41 @@ Payment Link. You just need to create the links in Stripe and paste them in.
 Go to <https://dashboard.stripe.com/register>. You'll need a parent's details
 (Stan is too young to own the account — it should be in your name).
 
-### 2. Create one Payment Link per keychain
+### 2. Create ONE Payment Link for "Custom 2-Sided Keychain"
 
-For each keychain in the shop:
+Stan now sells a single product: a custom keychain. Buyers pick a FRONT icon
+and a BACK icon on the website, and those choices ride along to Stripe so Stan
+knows what to make.
 
 1. In the Stripe dashboard, go to **Product catalogue → Add product**.
-2. Name it (e.g. "Assault Rifle Keychain"), set the price (e.g. £3 GBP).
+2. Name it `Custom 2-Sided Keychain`, set the price (e.g. £4 GBP).
 3. Save, then on the product page click **Create payment link**.
 4. Important settings:
-   - ✅ **Collect customer's name** (so Stan knows who to give it to)
-   - ✅ Add a custom field: **"School class / year"**
-   - ❌ Do NOT collect a shipping address (school pickup only)
-   - Set quantity limits if you like (e.g. max 3 per order)
+   - ✅ **Collect customer's name** (so Stan knows who to give it to).
+   - ✅ Add a custom field: **"School class / year"**.
+   - ❌ Do NOT collect a shipping address (school pickup only).
+   - Set quantity limits if you like (e.g. max 5 per order).
 5. Copy the link — it'll look like `https://buy.stripe.com/abc123xyz`.
 
-### 3. Paste each link into `products.js`
+The website appends the buyer's choices to that link as
+`?client_reference_id=front_rv_knife__back_bf_dragon_fruit`. You'll see this
+ID on every Stripe payment in the dashboard under **Payments → (the payment) →
+Client reference ID** — that tells you exactly which two icons to make.
 
-Open `products.js` and replace each `REPLACE_ME_...` URL with the real link:
+### 3. Paste the link into `products.js`
+
+Open `products.js` and replace the placeholder URL in `KEYCHAIN.paymentLink`:
 
 ```js
-{
-  name: "Assault Rifle",
-  // ...
+const KEYCHAIN = {
+  name: "Custom 2-Sided Keychain",
+  price: 4,
   paymentLink: "https://buy.stripe.com/abc123xyz",   // ← paste here
-}
+};
 ```
 
-Reload the page — done. Until you replace a link, that item's BUY button
-will show a friendly "Stan is still setting up payments" message instead of
-breaking.
+Reload the page — done. Until you replace the link, the BUY button shows a
+friendly "Stan is still setting up payments" message instead of breaking.
 
 ### 4. (Optional) Test mode first
 
@@ -66,29 +72,33 @@ dashboard (top-right). Test-mode Payment Links accept test card
 
 ## Editing the shop
 
-| Want to…                          | Edit this file       |
-| --------------------------------- | -------------------- |
-| Change a price                    | `products.js`        |
-| Add/remove a keychain             | `products.js`        |
-| Change a description or rarity    | `products.js`        |
-| Change colours / fonts            | `styles.css`         |
-| Change page text (hero / about)   | `index.html`         |
+| Want to…                                | Edit this file       |
+| --------------------------------------- | -------------------- |
+| Change the keychain price               | `products.js` (`KEYCHAIN.price`) |
+| Add/remove an icon from a game          | `products.js` (the `icons` array in the section) |
+| Add a whole new game                    | `products.js` (push a new entry to `SECTIONS`) |
+| Change a tier or icon name              | `products.js`        |
+| Change colours / fonts                  | `styles.css`         |
+| Change page text (hero / about / ideas) | `index.html`         |
 
-### Adding a new keychain
+### Adding a new icon to an existing game
 
-1. Drop the photo into `done/` (square PNG, ~512×512 works great).
-2. Add a new entry at the bottom of the `PRODUCTS` array in `products.js`:
+1. Run `make_icon_card.py` on the source icon (puts both `.png` print-master
+   and `.webp` web copy in the same folder):
+   ```bash
+   python3 make_icon_card.py orig/Rivals/NewWeapon.webp "New Weapon"
+   ```
+2. Move the resulting `.png` and `.webp` into `done/Rivals/` (or `done/BloxFruits/`).
+3. Add a new entry to the relevant section's `icons` array in `products.js`:
+   ```js
+   { name: "New Weapon", image: "done/Rivals/New Weapon.webp", tier: "EPIC" },
+   ```
 
-```js
-{
-  name: "Dragon Fruit",
-  image: "done/Dragon Fruit.png",
-  tier: "MYTHIC",   // COMMON | RARE | EPIC | LEGENDARY | MYTHIC
-  desc: "Breathes fire. Sort of. Not really.",
-  price: 4,
-  paymentLink: "https://buy.stripe.com/your_new_link",
-},
-```
+### Adding a whole new game
+
+1. Drop the framed WebPs into a new `done/<GameName>/` directory.
+2. Drop a logo into `logos/<gamename>.webp`.
+3. Add a new entry at the end of the `SECTIONS` array in `products.js`.
 
 That's it.
 

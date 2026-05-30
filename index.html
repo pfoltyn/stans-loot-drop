@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>STAN'S LOOT DROP — Real Keychains, Real Drip</title>
+    <title>STAN'S LOOT DROP — Custom Roblox Keychains</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Fredoka:wght@400;600;700&display=swap"
       rel="stylesheet"
@@ -17,32 +17,36 @@
       <div class="badge">⚠️ HANDMADE BY A 10 YEAR OLD ⚠️</div>
       <h1>STAN'S<br /><span class="hero-accent">LOOT&nbsp;DROP</span></h1>
       <p class="tagline">
-        Real keychains from <b>Rivals</b>. Real drip for your bag.
-        <br />
-        Drop chance: <b>100%</b> (you literally just buy it).
+        Custom 2-sided keychains from <b>Rivals</b> and <b>Blox Fruits</b>.<br />
+        Pick a front. Pick a back. Mix games. Brag.
       </p>
-      <a href="#shop" class="cta">BROWSE THE LOOT ↓</a>
+      <a href="#shop" class="cta">START BUILDING ↓</a>
     </header>
 
     <section class="strip">
       <div class="strip-track">
         <span>🔥 LIMITED STOCK</span>
         <span>⭐ HANDMADE</span>
+        <span>🔧 PICK FRONT + BACK</span>
         <span>🚚 SCHOOL PICKUP ONLY</span>
         <span>💸 NO TAXES (I'M 10)</span>
         <span>🔥 LIMITED STOCK</span>
         <span>⭐ HANDMADE</span>
+        <span>🔧 PICK FRONT + BACK</span>
         <span>🚚 SCHOOL PICKUP ONLY</span>
         <span>💸 NO TAXES (I'M 10)</span>
       </div>
     </section>
 
     <main id="shop" class="shop">
-      <h2 class="shop-title">THE LOOT</h2>
+      <h2 class="shop-title">BUILD YOUR KEYCHAIN</h2>
       <p class="shop-sub">
-        Tap a card. Pay with your parent's card. Get keychain at school. EZ.
+        Tap <b>FRONT</b> or <b>BACK</b> on any icon below to assign it. You can mix games.
       </p>
-      <div id="grid" class="grid"></div>
+
+      <div id="builder" class="builder"></div>
+
+      <div id="sections"></div>
     </main>
 
     <section class="about">
@@ -60,8 +64,8 @@
           <div class="emoji">🛠️</div>
           <h3>How they're made</h3>
           <p>
-            I draw the icon, mum prints it, I add the ring, BOOM — keychain.
-            Each one is slightly different which means they're all
+            I draw the icons, mum prints them on both sides, I add the ring, BOOM —
+            keychain. Each one is slightly different which means they're all
             <i>technically</i> rare.
           </p>
         </div>
@@ -77,13 +81,12 @@
     </section>
 
     <section class="ideas">
-      <h2>WANT A KEYCHAIN FROM ANOTHER GAME?</h2>
+      <h2>WANT ICONS FROM ANOTHER GAME?</h2>
       <p>
         Stan's open to commissions from other Roblox games. Tell him at school
         and he'll see what he can draw. Some he's already thinking about:
       </p>
       <ul class="ideas-list">
-        <li><b>Blox Fruits</b> — Dragon, Dough, Buddha, Leopard fruits</li>
         <li><b>Doors</b> — Rush, Ambush, Seek, Screech (10/10 spooky)</li>
         <li><b>Murder Mystery 2</b> — Chroma knives, classic knives</li>
         <li><b>Forsaken</b> — survivor + killer icons</li>
@@ -104,7 +107,6 @@
       </p>
     </footer>
 
-    <!-- Funny "you bought one" toast -->
     <div id="toast" class="toast hidden">
       <span class="toast-emoji">🎉</span>
       <span id="toast-text">LOOT ACQUIRED</span>
