@@ -141,21 +141,24 @@ a {
   font-family: "Bungee", sans-serif;
   font-size: 14px;
   padding: 10px 0;
-  display: flex;
-  gap: 36px;
   white-space: nowrap;
   overflow: hidden;
   transform: rotate(-1.2deg);
   margin: 30px -10px;
   box-shadow: var(--shadow);
 }
-.strip span {
-  display: inline-block;
+.strip-track {
+  display: inline-flex;
+  gap: 36px;
+  padding-right: 36px; /* keeps the seam spacing equal to between-item gaps */
   animation: marquee 22s linear infinite;
+}
+.strip-track span {
+  display: inline-block;
 }
 @keyframes marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+  to { transform: translateX(-50%); }
 }
 
 /* ---------- shop ---------- */
