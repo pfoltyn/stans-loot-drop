@@ -1,0 +1,22 @@
+# Files that should NOT be uploaded to Cloudflare as static assets.
+# Same syntax as .gitignore. Lives in the assets directory root.
+
+# git internals
+.git/
+.gitignore
+
+# wrangler internals
+.wrangler/
+wrangler.toml
+
+# repo docs / source — not part of the deployed site
+README.md
+make_icon_card.py
+__pycache__/
+*.pyc
+
+# original webp source images — only the framed PNGs in done/ are used
+orig/
+
+# macOS junk
+.DS_Store
