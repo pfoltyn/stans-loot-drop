@@ -13,7 +13,7 @@ const DEFAULT_PRICE = 3;
 const PRODUCTS = [
   {
     name: "Assault Rifle",
-    image: "done/Assault Rifle.png",
+    image: "done/Assault Rifle.webp",
     tier: "EPIC",
     desc: "Spray and pray, but make it hangable.",
     price: DEFAULT_PRICE,
@@ -21,7 +21,7 @@ const PRODUCTS = [
   },
   {
     name: "Crossbow",
-    image: "done/Crossbow.png",
+    image: "done/Crossbow.webp",
     tier: "RARE",
     desc: "Silent. Deadly. Dangles from your bag.",
     price: DEFAULT_PRICE,
@@ -29,7 +29,7 @@ const PRODUCTS = [
   },
   {
     name: "Flamethrower",
-    image: "done/Flamethrower.png",
+    image: "done/Flamethrower.webp",
     tier: "LEGENDARY",
     desc: "Toasty vibes. Does NOT actually shoot fire (sorry mum).",
     price: DEFAULT_PRICE,
@@ -37,7 +37,7 @@ const PRODUCTS = [
   },
   {
     name: "Grenade",
-    image: "done/Grenade.png",
+    image: "done/Grenade.webp",
     tier: "COMMON",
     desc: "Pull the pin… actually don't, this one's plastic.",
     price: DEFAULT_PRICE,
@@ -45,7 +45,7 @@ const PRODUCTS = [
   },
   {
     name: "Katana",
-    image: "done/Katana.png",
+    image: "done/Katana.webp",
     tier: "EPIC",
     desc: "Ninja drip. Cuts through absolutely nothing.",
     price: DEFAULT_PRICE,
@@ -53,7 +53,7 @@ const PRODUCTS = [
   },
   {
     name: "Knife",
-    image: "done/Knife.png",
+    image: "done/Knife.webp",
     tier: "COMMON",
     desc: "Sharp-looking. (It is not actually sharp.)",
     price: DEFAULT_PRICE,
@@ -61,7 +61,7 @@ const PRODUCTS = [
   },
   {
     name: "RPG",
-    image: "done/RPG.png",
+    image: "done/RPG.webp",
     tier: "LEGENDARY",
     desc: "Big boom energy. Zero actual booms.",
     price: DEFAULT_PRICE,
@@ -69,7 +69,7 @@ const PRODUCTS = [
   },
   {
     name: "Scythe",
-    image: "done/Scythe.png",
+    image: "done/Scythe.webp",
     tier: "LEGENDARY",
     desc: "For when you want to look extra spooky in maths.",
     price: DEFAULT_PRICE,
@@ -77,7 +77,7 @@ const PRODUCTS = [
   },
   {
     name: "Shorty",
-    image: "done/Shorty.png",
+    image: "done/Shorty.webp",
     tier: "RARE",
     desc: "Tiny gun. Massive drip.",
     price: DEFAULT_PRICE,
@@ -85,7 +85,7 @@ const PRODUCTS = [
   },
   {
     name: "Snatchel",
-    image: "done/Snatchel.png",
+    image: "done/Snatchel.webp",
     tier: "MYTHIC",
     desc: "If you know, you know. (If you don't, ask a Rivals main.)",
     price: DEFAULT_PRICE,
@@ -93,7 +93,7 @@ const PRODUCTS = [
   },
   {
     name: "Sniper",
-    image: "done/Sniper.png",
+    image: "done/Sniper.webp",
     tier: "EPIC",
     desc: "Headshots from across the playground. (Don't actually.)",
     price: DEFAULT_PRICE,
@@ -101,7 +101,7 @@ const PRODUCTS = [
   },
   {
     name: "War Horn",
-    image: "done/War Horn.png",
+    image: "done/War Horn.webp",
     tier: "MYTHIC",
     desc: "TOOOOOT. (It does not actually toot. Use your mouth.)",
     price: DEFAULT_PRICE,

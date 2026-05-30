@@ -15,8 +15,11 @@ make_icon_card.py
 __pycache__/
 *.pyc
 
-# original webp source images — only the framed PNGs in done/ are used
+# original webp source images — only the framed WebPs in done/ are used
 orig/
+
+# original PNG product cards — superseded by smaller WebP versions in same dir
+done/*.png
 
 # macOS junk
 .DS_Store
