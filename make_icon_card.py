@@ -3,6 +3,11 @@
 
 Usage:
     python3 make_icon_card.py <image> "<caption>" [-o output.png] [-s 512]
+                              [--no-webp] [--webp-quality 80]
+
+By default, also writes a `.webp` next to the PNG (web-optimized). The PNG is
+the print-ready master (carries DPI + sRGB ICC profile); the WebP is what the
+website serves.
 """
 
 import argparse
@@ -246,7 +251,8 @@ def draw_caption_text(canvas, text, content_box, caption_height, text_color):
     ImageDraw.Draw(canvas).text((tx, ty), text, font=font, fill=text_color)
 
 
-def build_card(image_path, caption, output_path, size=512, supersample=4, print_cm=3.2):
+def build_card(image_path, caption, output_path, size=512, supersample=4, print_cm=3.2,
+               webp_quality=80):
     # Render everything at supersample*size, then downscale with Lanczos for AA.
     render_size = size * supersample
     border = max(12, size // 20) * supersample
@@ -282,7 +288,13 @@ def build_card(image_path, caption, output_path, size=512, supersample=4, print_
 
     dpi = round(size * 2.54 / print_cm)
     canvas.save(output_path, dpi=(dpi, dpi), icc_profile=srgb_profile)
-    return output_path
+
+    web_path = None
+    if webp_quality is not None:
+        web_path = os.path.splitext(output_path)[0] + ".webp"
+        canvas.save(web_path, format="WEBP", quality=webp_quality, method=6)
+
+    return output_path, web_path
 
 
 def main():
@@ -292,6 +304,10 @@ def main():
     p.add_argument("-o", "--output", help="Output file path (default: <image>_card.png)")
     p.add_argument("-s", "--size", type=int, default=512, help="Output square size in pixels")
     p.add_argument("--print-cm", type=float, default=3.2, help="Target print size in cm (sets DPI)")
+    p.add_argument("--no-webp", action="store_true",
+                   help="Skip the .webp web-optimized output (PNG only)")
+    p.add_argument("--webp-quality", type=int, default=80,
+                   help="WebP quality 1-100 (default 80, visually lossless for these renders)")
     args = p.parse_args()
 
     if not os.path.exists(args.image):
@@ -300,8 +316,17 @@ def main():
 
     output = args.output or os.path.splitext(args.image)[0] + "_card.png"
     caption = args.caption or caption_from_filename(args.image)
-    result = build_card(args.image, caption, output, size=args.size, print_cm=args.print_cm)
-    print(f"wrote {result}")
+    webp_quality = None if args.no_webp else args.webp_quality
+    png_path, webp_path = build_card(
+        args.image, caption, output,
+        size=args.size, print_cm=args.print_cm, webp_quality=webp_quality,
+    )
+    print(f"wrote {png_path}")
+    if webp_path:
+        png_kb = os.path.getsize(png_path) // 1024
+        web_kb = os.path.getsize(webp_path) // 1024
+        ratio = png_kb / web_kb if web_kb else 0
+        print(f"wrote {webp_path}  ({png_kb} KB → {web_kb} KB, {ratio:.1f}× smaller)")
 
 
 if __name__ == "__main__":
