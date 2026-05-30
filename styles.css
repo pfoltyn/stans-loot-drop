@@ -29,7 +29,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: "Fredoka", system-ui, -apple-system, sans-serif;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) keeps the rotated marquee from causing horizontal
+     scroll WITHOUT breaking `position: sticky` on .builder below. */
+  overflow-x: clip;
 }
 
 a {
@@ -202,10 +204,14 @@ a {
   border-bottom: 2px dashed rgba(255, 255, 255, 0.12);
 }
 .game-logo {
-  height: 72px;
+  height: 64px;
   width: auto;
   max-width: 240px;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5));
+  padding: 8px 14px;
+  background: #fff;
+  border: 3px solid rgba(0, 0, 0, 0.55);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
 }
 .game-blurb {
   color: var(--muted);
