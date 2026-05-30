@@ -15,6 +15,7 @@ import math
 import os
 import re
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops, ImageEnhance, ImageCms
 
 
@@ -363,6 +364,60 @@ def build_card(image_path, caption, output_path, size=512, supersample=4, print_
     return output_path, web_path
 
 
+def _render_one(job):
+    """Worker for batch_render — must be top-level so ProcessPoolExecutor can pickle it."""
+    in_path, out_path, size, print_cm, webp_quality = job
+    caption = caption_from_filename(in_path)
+    logo_path = find_sibling_logo(in_path)
+    png_path, web_path = build_card(
+        in_path, caption, out_path,
+        size=size, print_cm=print_cm, webp_quality=webp_quality,
+        logo_image_path=logo_path,
+    )
+    return png_path, web_path
+
+
+def batch_render(input_dir, output_dir, size, print_cm, webp_quality, jobs=None):
+    """Render every supported image in ``input_dir`` (recursive) into ``output_dir``.
+
+    Mirrors the directory tree, skips files named ``Logo.*`` (used as the
+    sibling-logo for that subdir), and parallelizes across CPU cores.
+    """
+    exts = {".webp", ".png", ".jpg", ".jpeg"}
+    work = []
+    for root, _dirs, files in os.walk(input_dir):
+        rel = os.path.relpath(root, input_dir)
+        out_root = output_dir if rel == "." else os.path.join(output_dir, rel)
+        os.makedirs(out_root, exist_ok=True)
+        for name in sorted(files):
+            stem, ext = os.path.splitext(name)
+            if ext.lower() not in exts or stem.lower() == "logo":
+                continue
+            work.append((
+                os.path.join(root, name),
+                os.path.join(out_root, stem + ".png"),
+                size, print_cm, webp_quality,
+            ))
+
+    if not work:
+        print("no images found", file=sys.stderr)
+        return
+
+    workers = jobs or (os.cpu_count() or 4)
+    print(f"rendering {len(work)} cards across {workers} workers...")
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        futures = {ex.submit(_render_one, j): j for j in work}
+        done = 0
+        for fut in as_completed(futures):
+            job = futures[fut]
+            try:
+                png_path, _ = fut.result()
+                done += 1
+                print(f"[{done}/{len(work)}] wrote {png_path}")
+            except Exception as e:
+                print(f"FAILED {job[0]}: {e}", file=sys.stderr)
+
+
 def main():
     p = argparse.ArgumentParser(description="Generate a 3D-bordered icon card.")
     p.add_argument("image", help="Path to the source icon (webp/png/jpg/...)")
@@ -376,15 +431,28 @@ def main():
                    help="WebP quality 1-100 (default 80, visually lossless for these renders)")
     p.add_argument("--logo", help="Path to game logo (auto-detected as Logo.{webp,png,jpg} next to icon)")
     p.add_argument("--no-logo", action="store_true", help="Disable logo overlay even if one is auto-detected")
+    p.add_argument("--jobs", type=int, default=None,
+                   help="Batch mode: parallel workers (default: CPU count)")
     args = p.parse_args()
 
     if not os.path.exists(args.image):
         print(f"error: image not found: {args.image}", file=sys.stderr)
         sys.exit(1)
 
+    webp_quality = None if args.no_webp else args.webp_quality
+
+    # Batch mode: input is a directory, output is the destination directory.
+    if os.path.isdir(args.image):
+        out_dir = args.output or "done"
+        batch_render(
+            args.image, out_dir,
+            size=args.size, print_cm=args.print_cm,
+            webp_quality=webp_quality, jobs=args.jobs,
+        )
+        return
+
     output = args.output or os.path.splitext(args.image)[0] + "_card.png"
     caption = args.caption or caption_from_filename(args.image)
-    webp_quality = None if args.no_webp else args.webp_quality
     logo_path = None if args.no_logo else (args.logo or find_sibling_logo(args.image))
     png_path, webp_path = build_card(
         args.image, caption, output,
