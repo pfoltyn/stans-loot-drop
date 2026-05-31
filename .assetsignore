@@ -17,9 +17,15 @@ tools/
 
 # repo docs / source — not part of the deployed site
 README.md
-make_icon_card.py
+*.py
 __pycache__/
 *.pyc
+
+# fonts ship via Google Fonts CDN, not bundled
+fonts/
+
+# generated business-card artwork — for printing, not the public site
+stans_loot_card.png
 
 # original source images — only the framed WebPs in done/<Game>/ are served
 orig/
