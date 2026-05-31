@@ -134,6 +134,11 @@ function renderBuilder() {
   });
 }
 
+function iconLabel(ic) {
+  const sec = SECTIONS.find((s) => s.id === ic.sectionId);
+  return sec ? `${ic.name} (${sec.title})` : ic.name;
+}
+
 function buyURL() {
   if (!state.front || !state.back) return null;
   if (
@@ -148,6 +153,11 @@ function buyURL() {
   try {
     const u = new URL(KEYCHAIN.paymentLink);
     u.searchParams.set("client_reference_id", ref);
+    // Prefill the Stripe Payment Link's custom fields so the choices show up
+    // on the checkout page and as line items in the order email/dashboard.
+    // The keys must match the custom-field keys configured in Stripe.
+    u.searchParams.set("prefilled_front_icon", iconLabel(state.front));
+    u.searchParams.set("prefilled_back_icon", iconLabel(state.back));
     return u.toString();
   } catch {
     return null;
