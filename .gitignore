@@ -20,3 +20,6 @@ venv/
 
 # Logs
 *.log
+
+# Local-only third-party build tool (its own git repo, not a submodule)
+tools/APISR/
