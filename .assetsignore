@@ -9,6 +9,9 @@
 .wrangler/
 wrangler.toml
 
+# worker source — bundled into the Worker by wrangler, not served as a static asset
+worker/
+
 # repo docs / source — not part of the deployed site
 README.md
 make_icon_card.py

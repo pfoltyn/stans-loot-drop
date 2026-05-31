@@ -6,6 +6,8 @@
 // client_reference_id (e.g. "front_rv_knife__back_bf_dragon_fruit").
 // ============================================================
 
+import { CURRENCY, KEYCHAIN, SECTIONS } from "./catalog.js";
+
 const sectionsRoot = document.getElementById("sections");
 const builderEl = document.getElementById("builder");
 const toast = document.getElementById("toast");

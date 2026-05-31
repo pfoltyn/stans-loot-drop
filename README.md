@@ -64,6 +64,74 @@ const KEYCHAIN = {
 Reload the page — done. Until you replace the link, the BUY button shows a
 friendly "Stan is still setting up payments" message instead of breaking.
 
+## Email notifications on every sale
+
+A small Cloudflare Worker (`worker/index.js`) listens for Stripe's
+`checkout.session.completed` webhook, looks up the buyer's two icon choices
+from the catalog, and sends Stan a nicely-formatted email.
+
+### One-time setup
+
+#### 1. Sign up for Resend (free email API)
+
+<https://resend.com/signup> → free tier is 3000 emails/month, plenty.
+
+For testing, you can use Resend's default sender `onboarding@resend.dev`. To
+send from your own domain (nicer-looking emails), follow Resend's domain
+verification flow.
+
+Get an **API key** under **API Keys → Create API Key**. Save it somewhere safe —
+you'll only see it once.
+
+#### 2. Set the Worker secrets in Cloudflare
+
+Cloudflare dashboard → **Workers & Pages → stans-loot-drop → Settings →
+Variables and Secrets → Add variable**. Add four (each as type **Encrypted**):
+
+| Name                    | Value                                                |
+| ----------------------- | ---------------------------------------------------- |
+| `RESEND_API_KEY`        | The API key from step 1                              |
+| `NOTIFICATION_FROM`     | `Stan's Shop <onboarding@resend.dev>` (or your own)  |
+| `NOTIFICATION_TO`       | Your email address                                   |
+| `STRIPE_WEBHOOK_SECRET` | (filled in step 4)                                   |
+
+Save. The Worker auto-redeploys.
+
+#### 3. Add a Stripe webhook endpoint
+
+Stripe dashboard → **Developers → Webhooks → Add endpoint** (make sure you're
+in **Test mode** while you're still testing).
+
+- **Endpoint URL:** `https://stans-loot-drop.piotr-foltyn.workers.dev/webhook`
+- **Events to listen to:** select `checkout.session.completed`
+- Click **Add endpoint**.
+
+#### 4. Copy the webhook signing secret
+
+On the new endpoint's page, click **Reveal** under **Signing secret**. Copy the
+value (starts with `whsec_`). Paste it into the Cloudflare dashboard as the
+`STRIPE_WEBHOOK_SECRET` from step 2.
+
+#### 5. Test it
+
+Make a fake purchase on the site with Stripe test card `4242 4242 4242 4242`.
+Within ~5 seconds, an email should arrive with the buyer name, school class,
+front icon, back icon, and a "View in Stripe →" button.
+
+If nothing arrives:
+
+- **Stripe → Developers → Webhooks → your endpoint → Recent deliveries** shows
+  whether the webhook fired and what the Worker responded with.
+- **Cloudflare → Workers & Pages → stans-loot-drop → Logs** shows any errors
+  the Worker threw.
+
+### Going live
+
+When you switch the Payment Link from Test to Live mode, repeat steps 3 + 4
+in **Live mode** (test and live webhooks are separate). The Worker handles both
+identically; the email subject is prefixed with `[TEST]` for test-mode events
+so you can tell them apart at a glance.
+
 ### 4. (Optional) Test mode first
 
 While you're trying things out, toggle to **Test mode** in the Stripe
@@ -74,10 +142,10 @@ dashboard (top-right). Test-mode Payment Links accept test card
 
 | Want to…                                | Edit this file       |
 | --------------------------------------- | -------------------- |
-| Change the keychain price               | `products.js` (`KEYCHAIN.price`) |
-| Add/remove an icon from a game          | `products.js` (the `icons` array in the section) |
-| Add a whole new game                    | `products.js` (push a new entry to `SECTIONS`) |
-| Change a tier or icon name              | `products.js`        |
+| Change the keychain price               | `catalog.js` (`KEYCHAIN.price`) |
+| Add/remove an icon from a game          | `catalog.js` (the `icons` array in the section) |
+| Add a whole new game                    | `catalog.js` (push a new entry to `SECTIONS`) |
+| Change a tier or icon name              | `catalog.js`        |
 | Change colours / fonts                  | `styles.css`         |
 | Change page text (hero / about / ideas) | `index.html`         |
 

@@ -10,15 +10,15 @@
 // client_reference_id so Stan can see what to make. (See README.md.)
 // ============================================================
 
-const CURRENCY = "£";
+export const CURRENCY = "£";
 
-const KEYCHAIN = {
+export const KEYCHAIN = {
   name: "Custom 2-Sided Keychain",
   price: 4,
   paymentLink: "https://buy.stripe.com/test_28E3cv9zk3RJg6IfSmgMw00",
 };
 
-const SECTIONS = [
+export const SECTIONS = [
   {
     id: "rv",
     title: "Rivals",
