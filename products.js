@@ -15,7 +15,7 @@ const CURRENCY = "£";
 const KEYCHAIN = {
   name: "Custom 2-Sided Keychain",
   price: 4,
-  paymentLink: "https://buy.stripe.com/test_5kQ8wP3bpcQHehl0ee5ZC00",
+  paymentLink: "https://buy.stripe.com/test_28E3cv9zk3RJg6IfSmgMw00",
 };
 
 const SECTIONS = [
