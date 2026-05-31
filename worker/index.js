@@ -45,6 +45,19 @@ export default {
 };
 
 async function handleWebhook(request, env) {
+  // Fail fast with a clear message if any secret isn't wired up.
+  const missing = [
+    "STRIPE_WEBHOOK_SECRET",
+    "RESEND_API_KEY",
+    "NOTIFICATION_FROM",
+    "NOTIFICATION_TO",
+  ].filter((k) => !env[k]);
+  if (missing.length) {
+    throw new Error(
+      "Missing Cloudflare Worker secret(s): " + missing.join(", ")
+    );
+  }
+
   const sigHeader = request.headers.get("stripe-signature");
   if (!sigHeader) return new Response("Missing signature", { status: 400 });
 
