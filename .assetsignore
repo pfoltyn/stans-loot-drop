@@ -12,6 +12,9 @@ wrangler.toml
 # worker source — bundled into the Worker by wrangler, not served as a static asset
 worker/
 
+# build/dev tooling — not part of the deployed site
+tools/
+
 # repo docs / source — not part of the deployed site
 README.md
 make_icon_card.py
@@ -27,6 +30,10 @@ done/*.webp
 
 # print-only PNG masters (kept in repo for reprints, not shipped to web)
 done/**/*.png
+
+# original JPG product photos — superseded by smaller WebP versions in real/
+real/*.jpg
+real/*.jpeg
 
 # macOS junk
 .DS_Store

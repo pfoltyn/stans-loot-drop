@@ -9,11 +9,14 @@
 import { CURRENCY, KEYCHAIN, SECTIONS } from "./catalog.js";
 
 const sectionsRoot = document.getElementById("sections");
+const filtersRoot = document.getElementById("filters");
 const builderEl = document.getElementById("builder");
 const toast = document.getElementById("toast");
 const toastText = document.getElementById("toast-text");
 
 const state = { front: null, back: null };
+const filterState = { q: "", gameId: "" };
+const totalIcons = SECTIONS.reduce((n, s) => n + s.icons.length, 0);
 
 function iconSlug(sectionId, name) {
   return (
@@ -39,15 +42,29 @@ function formatPrice(p) {
   return `${CURRENCY}${Number.isInteger(p) ? p : p.toFixed(2)}`;
 }
 
+function esc(s) {
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]
+  );
+}
+
 function iconCardHTML(sectionId, ic) {
   const slug = iconSlug(sectionId, ic.name);
   return `
-    <article class="card" data-slug="${slug}">
+    <article class="card" data-slug="${slug}" data-name="${esc(ic.name.toLowerCase())}" data-tier="${ic.tier.toLowerCase()}">
       <div class="card-img">
         <span class="tier tier-${ic.tier}">${ic.tier}</span>
-        <img src="${ic.image}" alt="${ic.name}" loading="lazy" />
+        <img src="${esc(ic.image)}" alt="${esc(ic.name)}" loading="lazy" />
       </div>
-      <h3 class="card-name">${ic.name}</h3>
+      <h3 class="card-name">${esc(ic.name)}</h3>
       <div class="card-actions">
         <button class="pick-btn pick-front" data-side="front">FRONT</button>
         <button class="pick-btn pick-back" data-side="back">BACK</button>
@@ -59,18 +76,76 @@ function iconCardHTML(sectionId, ic) {
 function renderSections() {
   sectionsRoot.innerHTML = SECTIONS.map(
     (sec) => `
-    <section class="game" id="game-${sec.id}">
+    <section class="game" id="game-${sec.id}" data-id="${sec.id}">
       <div class="game-header">
-        <img class="game-logo" src="${sec.logo}" alt="${sec.title} logo" />
-        <p class="game-blurb">${sec.blurb}</p>
+        <img class="game-logo" src="${esc(sec.logo)}" alt="${esc(sec.title)} logo" />
+        <p class="game-blurb">${esc(sec.blurb)}</p>
         <span class="game-count">${sec.icons.length} icons</span>
       </div>
+      <p class="game-empty" hidden>No matches in ${esc(sec.title)}.</p>
       <div class="grid">
         ${sec.icons.map((ic) => iconCardHTML(sec.id, ic)).join("")}
       </div>
     </section>
   `
   ).join("");
+}
+
+function renderFilters() {
+  const pills = [
+    { id: "", label: "All", count: totalIcons },
+    ...SECTIONS.map((s) => ({ id: s.id, label: s.title, count: s.icons.length })),
+  ];
+  filtersRoot.innerHTML = `
+    <input
+      id="search"
+      class="filter-search"
+      type="search"
+      placeholder="🔎 Search ${totalIcons} icons by name or tier (e.g. dragon, mythic)…"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <div class="pills" role="tablist">
+      ${pills
+        .map(
+          (p) => `
+        <button
+          class="pill${p.id === filterState.gameId ? " active" : ""}"
+          data-game="${p.id}"
+          role="tab"
+          aria-selected="${p.id === filterState.gameId}"
+        >${esc(p.label)} <span class="pill-count">${p.count}</span></button>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function applyFilters() {
+  const q = filterState.q.trim().toLowerCase();
+  const gameId = filterState.gameId;
+
+  document.querySelectorAll(".game").forEach((sec) => {
+    const sectionMatchesGame = !gameId || sec.dataset.id === gameId;
+    if (!sectionMatchesGame) {
+      sec.hidden = true;
+      return;
+    }
+    sec.hidden = false;
+
+    let visible = 0;
+    sec.querySelectorAll(".card").forEach((card) => {
+      const matches =
+        !q ||
+        card.dataset.name.includes(q) ||
+        card.dataset.tier.includes(q);
+      card.hidden = !matches;
+      if (matches) visible++;
+    });
+    sec.querySelector(".game-empty").hidden = visible > 0;
+    sec.querySelector(".grid").hidden = visible === 0;
+  });
 }
 
 function slotHTML(side, ic) {
@@ -162,6 +237,18 @@ function buyURL() {
 }
 
 document.addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (pill) {
+    filterState.gameId = pill.dataset.game || "";
+    document.querySelectorAll(".pill").forEach((p) => {
+      const on = (p.dataset.game || "") === filterState.gameId;
+      p.classList.toggle("active", on);
+      p.setAttribute("aria-selected", on);
+    });
+    applyFilters();
+    return;
+  }
+
   const pick = e.target.closest(".pick-btn");
   if (pick) {
     const card = pick.closest(".card");
@@ -191,6 +278,13 @@ document.addEventListener("click", (e) => {
   }
 });
 
+document.addEventListener("input", (e) => {
+  if (e.target.id === "search") {
+    filterState.q = e.target.value;
+    applyFilters();
+  }
+});
+
 let toastTimer;
 function showToast(msg) {
   toastText.textContent = msg;
@@ -199,8 +293,10 @@ function showToast(msg) {
   toastTimer = setTimeout(() => toast.classList.add("hidden"), 3200);
 }
 
+renderFilters();
 renderSections();
 renderBuilder();
+applyFilters();
 
 // Easter egg
 let titleTaps = 0;

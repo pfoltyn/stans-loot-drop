@@ -28,7 +28,7 @@ def caption_from_filename(path):
     stem = os.path.splitext(os.path.basename(path))[0]
     stem = re.sub(r"[\s_]*\(?icon[^)]*\)?$", "", stem, flags=re.IGNORECASE)
     stem = re.sub(r"[\s_]+s$", "", stem)
-    stem = stem.replace("_", " ").replace("-", " ")
+    stem = stem.replace("_", " ")
     stem = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", stem)
     return stem.strip() or "Untitled"
 
@@ -341,7 +341,7 @@ def build_card(image_path, caption, output_path, size=512, supersample=4, print_
     paste_icon(canvas, image_path, content_box, caption_height, icon_offset)
     if logo_image_path:
         avail_h = (content_box[3] - content_box[1]) - caption_height
-        logo_band_h = int(avail_h * 0.24)  # 2/3 of the previous (0.36) band size
+        logo_band_h = int(avail_h * 0.16)  # 2/3 of the previous (0.24) band size
         paste_logo(canvas, logo_image_path, content_box, logo_band_h)
     draw_caption_text(canvas, caption, content_box, caption_height, text_color)
 
