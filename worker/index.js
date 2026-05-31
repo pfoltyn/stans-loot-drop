@@ -19,18 +19,28 @@ import { SECTIONS } from "../catalog.js";
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.pathname === "/webhook" && request.method === "POST") {
-      try {
+    try {
+      const url = new URL(request.url);
+      if (url.pathname === "/webhook" && request.method === "POST") {
         return await handleWebhook(request, env);
-      } catch (e) {
-        console.error("Webhook error:", e);
-        // 500 lets Stripe retry on transient failures.
-        return new Response("Webhook error: " + e.message, { status: 500 });
       }
+      if (!env.ASSETS) {
+        // Helpful diagnostic if the [assets] binding isn't wired up.
+        return new Response(
+          "Worker misconfigured: env.ASSETS is undefined. " +
+            "Check wrangler.toml [assets] block has binding = \"ASSETS\".",
+          { status: 500, headers: { "content-type": "text/plain" } }
+        );
+      }
+      // Anything else: serve static assets.
+      return env.ASSETS.fetch(request);
+    } catch (e) {
+      console.error("Worker error:", e?.stack || e);
+      return new Response("Worker error: " + (e?.message || e), {
+        status: 500,
+        headers: { "content-type": "text/plain" },
+      });
     }
-    // Anything else: serve static assets.
-    return env.ASSETS.fetch(request);
   },
 };
 
