@@ -2,6 +2,10 @@ name = "stans-loot-drop"
 compatibility_date = "2026-01-01"
 main = "worker/index.js"
 
+routes = [
+  { pattern = "stansloot.com", custom_domain = true },
+]
+
 [assets]
 directory = "."
 binding = "ASSETS"

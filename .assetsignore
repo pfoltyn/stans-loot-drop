@@ -23,6 +23,10 @@ __pycache__/
 
 # original source images — only the framed WebPs in done/<Game>/ are served
 orig/
+orig_hd/
+
+# scratch list of source URLs, not for the public site
+urls.txt
 
 # old flat duplicates and preview test images at done/ root
 done/*.png
