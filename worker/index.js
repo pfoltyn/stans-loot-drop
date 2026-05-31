@@ -196,7 +196,7 @@ async function sendEmail(env, { subject, html, text }) {
     },
     body: JSON.stringify({
       from: env.NOTIFICATION_FROM,
-      to: [env.NOTIFICATION_TO],
+      to: env.NOTIFICATION_TO,
       subject,
       html,
       text,
