@@ -39,6 +39,13 @@ a {
   text-decoration: none;
 }
 
+/* Filter / search relies on the `hidden` attribute. Some of our elements
+   (.card, .grid) set their own `display`, which would otherwise override the
+   user-agent `[hidden] { display: none }` rule. Force it. */
+[hidden] {
+  display: none !important;
+}
+
 /* ---------- background grid ---------- */
 .bg-grid {
   position: fixed;
