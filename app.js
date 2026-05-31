@@ -155,9 +155,10 @@ function buyURL() {
     u.searchParams.set("client_reference_id", ref);
     // Prefill the Stripe Payment Link's custom fields so the choices show up
     // on the checkout page and as line items in the order email/dashboard.
-    // The keys must match the custom-field keys configured in Stripe.
-    u.searchParams.set("prefilled_front_icon", iconLabel(state.front));
-    u.searchParams.set("prefilled_back_icon", iconLabel(state.back));
+    // The keys must match the auto-generated keys Stripe assigned (it strips
+    // spaces from the label rather than replacing them with underscores).
+    u.searchParams.set("prefilled_fronticon", iconLabel(state.front));
+    u.searchParams.set("prefilled_backicon", iconLabel(state.back));
     return u.toString();
   } catch {
     return null;
