@@ -61,7 +61,6 @@ function iconCardHTML(sectionId, ic) {
   return `
     <article class="card" data-slug="${slug}" data-name="${esc(ic.name.toLowerCase())}" data-tier="${ic.tier.toLowerCase()}">
       <div class="card-img">
-        <span class="tier tier-${ic.tier}">${ic.tier}</span>
         <img src="${esc(ic.image)}" alt="${esc(ic.name)}" loading="lazy" />
       </div>
       <h3 class="card-name">${esc(ic.name)}</h3>
