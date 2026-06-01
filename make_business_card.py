@@ -259,7 +259,7 @@ def build_card(output_path, size_long=2048, supersample=2):
     # Website text: 🔥 LIMITED STOCK · ⭐ HANDMADE · 🔧 PICK FRONT + BACK · 🚚 SCHOOL PICKUP ONLY · 💸 NO TAXES (I'M 10)
     # Rendered as alternating text/emoji segments so Apple Color Emoji shows.
     marquee_h = int(inner_h * 0.20)
-    mq_y0 = row_top + thumb_h + int(inner_h * 0.04)
+    mq_y0 = row_top + thumb_h + int(inner_h * 0.09)
     mq_y1 = mq_y0 + marquee_h
     mq_radius = marquee_h // 4
 
@@ -277,10 +277,9 @@ def build_card(output_path, size_long=2048, supersample=2):
         ("🔥", "emoji"), (" LIMITED STOCK   ", "text"),
         ("⭐", "emoji"), (" HANDMADE   ", "text"),
         ("🔧", "emoji"), (" PICK FRONT + BACK   ", "text"),
-        ("🚚", "emoji"), (" SCHOOL PICKUP ONLY   ", "text"),
-        ("💸", "emoji"), (" NO TAXES (I'M 10)", "text"),
+        ("🚚", "emoji"), (" SCHOOL PICKUP ONLY", "text"),
     ]
-    text_size = int(strip_h * 0.45)
+    text_size = int(strip_h * 0.78)
     while True:
         text_font = font("bungee", text_size)
         segs = []
@@ -289,7 +288,7 @@ def build_card(output_path, size_long=2048, supersample=2):
                 segs.append((content, "emoji"))
             else:
                 segs.append((content, (text_font, dark_text)))
-        layer, total_w, layer_h = render_emoji_text(segs, target_h=int(strip_h * 0.55),
+        layer, total_w, layer_h = render_emoji_text(segs, target_h=int(strip_h * 0.28),
                                                     draw_canvas_size=strip_layer.size)
         if total_w <= strip_w - int(strip_h * 0.6) or text_size < 12:
             break
