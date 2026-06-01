@@ -49,6 +49,8 @@ export const SECTIONS = [
       { name: "Handgun", image: "done/Rivals/Handgun.webp", tier: "RARE" },
       { name: "Jump Pad", image: "done/Rivals/Jump Pad.webp", tier: "RARE" },
       { name: "Katana", image: "done/Rivals/Katana.webp", tier: "EPIC" },
+      { name: "Keyper", image: "done/Rivals/Keyper.webp", tier: "EPIC" },
+      { name: "Keyrambit", image: "done/Rivals/Keyrambit.webp", tier: "EPIC" },
       { name: "Knife", image: "done/Rivals/Knife.webp", tier: "COMMON" },
       { name: "Maul", image: "done/Rivals/Maul.webp", tier: "EPIC" },
       { name: "Medkit", image: "done/Rivals/Medkit.webp", tier: "RARE" },
