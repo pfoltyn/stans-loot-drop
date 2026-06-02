@@ -25,4 +25,4 @@ invocation_logs = true
 # Then paste the returned id below.
 [[kv_namespaces]]
 binding = "CHAT_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "440efa22eea642ea84e8313709485f8a"
