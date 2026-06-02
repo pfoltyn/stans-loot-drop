@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stan's Loot — moderate suggestions</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .admin {
+        max-width: 760px;
+        margin: 60px auto;
+        padding: 0 20px;
+      }
+      .admin h1 {
+        font-family: "Bungee", sans-serif;
+        text-shadow: 3px 3px 0 var(--accent-2);
+      }
+      .admin-login {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+      .admin-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .btn {
+        font-family: "Bungee", sans-serif;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 14px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .btn-approve { background: var(--good); color: #000; }
+      .btn-delete  { background: var(--accent-2); color: #fff; }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .admin-empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 40px;
+        font-style: italic;
+      }
+      .admin-error { color: var(--accent-2); margin-bottom: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+
+    <main class="admin">
+      <h1>SUGGESTIONS — MODERATE</h1>
+
+      <div id="login" class="admin-login">
+        <input
+          id="token"
+          class="chat-input"
+          type="password"
+          placeholder="Admin password"
+          style="flex: 1"
+          autocomplete="current-password"
+        />
+        <button id="login-btn" class="btn btn-approve">UNLOCK</button>
+      </div>
+
+      <div id="error" class="admin-error" hidden></div>
+      <div id="list" class="chat-feed" hidden></div>
+    </main>
+
+    <script>
+      const TOKEN_KEY = "stan_admin_token";
+      const tokenInput = document.getElementById("token");
+      const loginBtn = document.getElementById("login-btn");
+      const list = document.getElementById("list");
+      const loginBox = document.getElementById("login");
+      const errBox = document.getElementById("error");
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+        }[c]));
+      }
+
+      function formatTime(ts) {
+        return new Date(ts).toLocaleString();
+      }
+
+      async function api(path, opts = {}) {
+        const token = localStorage.getItem(TOKEN_KEY) || "";
+        const r = await fetch(path, {
+          ...opts,
+          headers: {
+            ...(opts.headers || {}),
+            "x-admin-token": token,
+            ...(opts.body ? { "content-type": "application/json" } : {}),
+          },
+        });
+        if (r.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+          throw new Error("Wrong password");
+        }
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+        return j;
+      }
+
+      async function refresh() {
+        try {
+          const { messages } = await api("/api/chat/admin/pending");
+          if (!messages.length) {
+            list.innerHTML = `<div class="admin-empty">Nothing pending. ✨</div>`;
+            return;
+          }
+          list.innerHTML = messages
+            .map(
+              (m) => `
+              <div class="chat-msg chat-msg--pending" data-id="${escapeHtml(m.id)}">
+                <div class="chat-msg-head">
+                  <span class="chat-msg-name">${escapeHtml(m.name)}</span>
+                  <span class="chat-msg-time">${formatTime(m.ts)}</span>
+                </div>
+                <div class="chat-msg-body">${escapeHtml(m.message)}</div>
+                <div class="admin-actions">
+                  <button class="btn btn-approve" data-act="approve">APPROVE</button>
+                  <button class="btn btn-delete" data-act="delete">DELETE</button>
+                </div>
+              </div>`
+            )
+            .join("");
+        } catch (e) {
+          showLogin(e.message);
+        }
+      }
+
+      function showLogin(msg) {
+        loginBox.hidden = false;
+        list.hidden = true;
+        if (msg) {
+          errBox.textContent = msg;
+          errBox.hidden = false;
+        }
+      }
+
+      function showList() {
+        loginBox.hidden = true;
+        errBox.hidden = true;
+        list.hidden = false;
+        refresh();
+      }
+
+      loginBtn.addEventListener("click", () => {
+        const t = tokenInput.value.trim();
+        if (!t) return;
+        localStorage.setItem(TOKEN_KEY, t);
+        showList();
+      });
+
+      tokenInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") loginBtn.click();
+      });
+
+      list.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button[data-act]");
+        if (!btn) return;
+        const card = btn.closest("[data-id]");
+        const id = card?.dataset.id;
+        if (!id) return;
+        const act = btn.dataset.act;
+        const path = act === "approve" ? "/api/chat/admin/approve" : "/api/chat/admin/delete";
+        // Disable both buttons so a double-tap doesn't double-fire.
+        card.querySelectorAll("button").forEach((b) => (b.disabled = true));
+        try {
+          await api(path, { method: "POST", body: JSON.stringify({ id }) });
+          card.remove();
+          if (!list.querySelector("[data-id]")) {
+            list.innerHTML = `<div class="admin-empty">Nothing pending. ✨</div>`;
+          }
+        } catch (err) {
+          alert(err.message);
+          card.querySelectorAll("button").forEach((b) => (b.disabled = false));
+        }
+      });
+
+      if (localStorage.getItem(TOKEN_KEY)) {
+        showList();
+      } else {
+        showLogin();
+      }
+    </script>
+  </body>
+</html>

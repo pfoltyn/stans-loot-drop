@@ -138,6 +138,46 @@ While you're trying things out, toggle to **Test mode** in the Stripe
 dashboard (top-right). Test-mode Payment Links accept test card
 `4242 4242 4242 4242` so you can pretend-buy without spending real money.
 
+## Suggestions box (in-page chat)
+
+There's a "suggestions box" on the homepage where friends can leave a name and
+a message. Submitters see their own message immediately (marked **waiting for
+Stan…**); everyone else only sees it after you approve it via `/admin`.
+
+### One-time setup
+
+#### 1. Create the KV namespace
+
+```bash
+wrangler kv namespace create CHAT_KV
+```
+
+Copy the `id` it prints and paste it into `wrangler.toml` (replace
+`REPLACE_WITH_KV_NAMESPACE_ID` under `[[kv_namespaces]]`).
+
+#### 2. Set the admin password
+
+Pick a strong password and store it as a Worker secret:
+
+```bash
+wrangler secret put ADMIN_TOKEN
+```
+
+(or via Cloudflare dashboard → **Workers → stans-loot-drop → Settings →
+Variables and Secrets**, type **Encrypted**.)
+
+#### 3. Deploy
+
+```bash
+wrangler deploy
+```
+
+### Moderating
+
+Go to `https://stansloot.com/admin.html`, type the password, and you'll see
+all pending messages with **APPROVE** / **DELETE** buttons. The password is
+saved in your browser so you don't need to retype it.
+
 ## Editing the shop
 
 | Want to…                                | Edit this file       |
