@@ -38,6 +38,37 @@
       </div>
     </section>
 
+    <section class="chat">
+      <h2>SUGGESTIONS BOX 📬</h2>
+      <p>
+        Got an idea, a game I should add, or just want to say hi? Drop a
+        message. It'll show up here once I've had a look (so we keep it clean!).
+      </p>
+      <div id="chat-feed" class="chat-feed" aria-live="polite"></div>
+      <form id="chat-form" class="chat-form" autocomplete="off">
+        <input
+          id="chat-name"
+          class="chat-input"
+          name="name"
+          type="text"
+          placeholder="Your name"
+          maxlength="40"
+          required
+        />
+        <textarea
+          id="chat-message"
+          class="chat-input chat-textarea"
+          name="message"
+          placeholder="Type your suggestion…"
+          maxlength="500"
+          rows="2"
+          required
+        ></textarea>
+        <button id="chat-send" class="chat-send" type="submit">SEND →</button>
+        <div id="chat-status" class="chat-status" role="status"></div>
+      </form>
+    </section>
+
     <section class="real">
       <h2>WHAT IT LOOKS LIKE IRL</h2>
       <p>Stan's actual handiwork. Each keychain has two custom sides — front + back.</p>
@@ -118,37 +149,6 @@
         <li><b>Grow a Garden</b> — rare seeds & plants</li>
         <li><b>Anime Defenders</b> — favourite units</li>
       </ul>
-    </section>
-
-    <section class="chat">
-      <h2>SUGGESTIONS BOX 📬</h2>
-      <p>
-        Got an idea, a game I should add, or just want to say hi? Drop a
-        message. It'll show up here once I've had a look (so we keep it clean!).
-      </p>
-      <div id="chat-feed" class="chat-feed" aria-live="polite"></div>
-      <form id="chat-form" class="chat-form" autocomplete="off">
-        <input
-          id="chat-name"
-          class="chat-input"
-          name="name"
-          type="text"
-          placeholder="Your name"
-          maxlength="40"
-          required
-        />
-        <textarea
-          id="chat-message"
-          class="chat-input chat-textarea"
-          name="message"
-          placeholder="Type your suggestion…"
-          maxlength="500"
-          rows="2"
-          required
-        ></textarea>
-        <button id="chat-send" class="chat-send" type="submit">SEND →</button>
-        <div id="chat-status" class="chat-status" role="status"></div>
-      </form>
     </section>
 
     <footer>
