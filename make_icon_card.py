@@ -241,14 +241,32 @@ def enhance_icon(icon, saturation=1.5, contrast=1.2, brightness=1.05):
     return Image.merge("RGBA", (r, g, b, a))
 
 
-def paste_icon(canvas, icon_path, content_box, caption_height, offset_px):
-    """Scale the icon to fit, add a soft drop shadow, and composite centered."""
+def paste_icon(canvas, icon_path, content_box, caption_height, offset_px, panel_mask):
+    """Scale the icon to fit, add a soft drop shadow, and composite centered.
+
+    If the source image has no transparency (e.g. a solid JPG or a PNG with no
+    alpha channel), it's stretched to fill the entire panel background above
+    the caption strip — clipped to the rounded panel mask, no shadow, no
+    offset.
+    """
     icon = Image.open(icon_path).convert("RGBA")
-    icon = enhance_icon(icon)
+    has_transparency = icon.getchannel("A").getextrema()[0] < 255
 
     x0, y0, x1, y1 = content_box
     avail_w = x1 - x0
     avail_h = (y1 - y0) - caption_height
+
+    if not has_transparency:
+        icon = enhance_icon(icon)
+        icon = icon.resize((avail_w, avail_h), Image.LANCZOS)
+        icon = icon.filter(ImageFilter.UnsharpMask(radius=2, percent=120, threshold=2))
+        layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        layer.paste(icon, (x0, y0))
+        layer.putalpha(ImageChops.multiply(layer.split()[-1], panel_mask))
+        canvas.alpha_composite(layer)
+        return
+
+    icon = enhance_icon(icon)
 
     pad = int(min(avail_w, avail_h) * 0.06)
     max_w = avail_w - 2 * pad
@@ -338,7 +356,7 @@ def build_card(image_path, caption, output_path, size=512, supersample=4, print_
     draw_groove(canvas, content_box, radius, groove)
 
     # Icon uses the full panel; the logo (if any) is overlaid as a corner sticker.
-    paste_icon(canvas, image_path, content_box, caption_height, icon_offset)
+    paste_icon(canvas, image_path, content_box, caption_height, icon_offset, panel_mask)
     if logo_image_path:
         avail_h = (content_box[3] - content_box[1]) - caption_height
         logo_band_h = int(avail_h * 0.16)  # 2/3 of the previous (0.24) band size
