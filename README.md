@@ -178,6 +178,25 @@ Go to `https://stansloot.com/admin.html`, type the password, and you'll see
 all pending messages with **APPROVE** / **DELETE** buttons. The password is
 saved in your browser so you don't need to retype it.
 
+### Storage and KV quota
+
+All messages live in just two KV keys: `approved:index` and `pending:index`,
+each holding a JSON array of records. Reads (the public feed + the admin
+panel) are a single `KV.get`; writes are read-modify-write. There are **no
+list operations** in the hot path — earlier versions used `KV.list` plus per-id
+gets, which burned through the free tier's daily list quota fast.
+
+If you're upgrading from the old per-id layout and want to keep existing
+messages, hit the migration endpoint once after deploying:
+
+```bash
+curl -X POST https://stansloot.com/api/chat/admin/migrate \
+  -H "x-admin-token: <your ADMIN_TOKEN>"
+```
+
+It scans the legacy keys with one `list()` per kind, populates the index
+keys, and is safe to re-run (it skips kinds whose index already exists).
+
 ## Editing the shop
 
 | Want to…                                | Edit this file       |
