@@ -127,11 +127,11 @@ def build_page(icon_path, size_px, cut_marks=True, offset_px=(0, 0)):
         gap = mm_to_px(2)
         ink = (140, 140, 140)
         thick = max(1, mm_to_px(0.15))
-        # Cut marks always trace the icon's *true centred* position so cutting
-        # is consistent across the stack — the offset is for printer
-        # registration, not for where you actually want the icon to land.
-        cut_x0 = (page_w - size_px) // 2
-        cut_y0 = (page_h - size_px) // 2
+        # Cut marks track the (offset-shifted) icon position so the front and
+        # back marks line up through the paper after the printer's duplex
+        # registration drift — one cut works for both sides.
+        cut_x0 = x0
+        cut_y0 = y0
         for cx, cy, dx, dy in [
             (cut_x0, cut_y0, -1, -1),
             (cut_x0 + size_px, cut_y0,  1, -1),
@@ -172,8 +172,8 @@ def build_grid_page(cells, cols, rows, cell_px, gap_px, cut_marks=True, offset_p
 
     ``cells`` is an iterable of (row, col, icon_path); missing cells stay blank.
     ``offset_px`` shifts every icon by the same amount (printer-registration
-    compensation); cut marks always trace the unshifted cell so the cutting
-    grid stays consistent.
+    compensation); cut marks track the offset too so front- and back-page
+    marks line up through the paper after the printer's drift.
     """
     page_w = mm_to_px(PAGE_MM[0])
     page_h = mm_to_px(PAGE_MM[1])
@@ -197,8 +197,8 @@ def build_grid_page(cells, cols, rows, cell_px, gap_px, cut_marks=True, offset_p
         d = ImageDraw.Draw(page)
         for row in range(rows):
             for col in range(cols):
-                cell_x0 = grid_x0 + col * (cell_px + gap_px)
-                cell_y0 = grid_y0 + row * (cell_px + gap_px)
+                cell_x0 = grid_x0 + col * (cell_px + gap_px) + ox
+                cell_y0 = grid_y0 + row * (cell_px + gap_px) + oy
                 _draw_cut_marks(d, cell_x0, cell_y0,
                                 cell_x0 + cell_px, cell_y0 + cell_px)
 
