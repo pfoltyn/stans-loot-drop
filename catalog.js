@@ -247,6 +247,7 @@ export const SECTIONS = [
       { name: "Keynade", image: "done/Rivals/Keynade.webp", tier: "LEGENDARY" },
       { name: "Keynais", image: "done/Rivals/Keynais.webp", tier: "LEGENDARY" },
       { name: "Keyper", image: "done/Rivals/Keyper.webp", tier: "EPIC" },
+      { name: "Keyrambit Dark Matter", image: "done/Rivals/Keyrambit Dark Matter.webp", tier: "LEGENDARY" },
       { name: "Keyrambit", image: "done/Rivals/Keyrambit.webp", tier: "EPIC" },
       { name: "Keyshot", image: "done/Rivals/Keyshot.webp", tier: "RARE" },
       { name: "Keyst Rifle", image: "done/Rivals/Keyst Rifle.webp", tier: "RARE" },
