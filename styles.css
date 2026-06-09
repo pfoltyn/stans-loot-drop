@@ -690,6 +690,40 @@ footer {
 }
 .toast-emoji { font-size: 22px; }
 
+/* ---------- contact (custom keychain email) ---------- */
+.contact {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 20px 0;
+  text-align: center;
+}
+.contact h2 {
+  font-family: "Bungee", sans-serif;
+  font-size: clamp(22px, 4vw, 36px);
+  margin: 0 0 12px;
+  text-shadow: 3px 3px 0 var(--accent);
+}
+.contact p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+}
+.contact-email {
+  font-family: "Bungee", sans-serif;
+  color: var(--accent);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border-bottom: 2px dashed var(--accent-2);
+  padding-bottom: 2px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.contact-email:hover {
+  color: var(--accent-2);
+  border-color: var(--accent);
+}
+
 /* ---------- chat / suggestions box ---------- */
 .chat {
   max-width: 720px;
