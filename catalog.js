@@ -232,6 +232,7 @@ export const SECTIONS = [
       { name: "Hyper Sniper", image: "done/Rivals/Hyper Sniper.webp", tier: "RARE" },
       { name: "Ice Maul", image: "done/Rivals/Ice Maul.webp", tier: "EPIC" },
       { name: "Ice Permafrost", image: "done/Rivals/Ice Permafrost.webp", tier: "LEGENDARY" },
+      { name: "Insidious Balisong", image: "done/Rivals/Insidious Balisong.webp", tier: "EPIC" },
       { name: "Jack O'Thrower", image: "done/Rivals/Jack O'Thrower.webp", tier: "EPIC" },
       { name: "Jingle Grenade", image: "done/Rivals/Jingle Grenade.webp", tier: "LEGENDARY" },
       { name: "Jolly Man", image: "done/Rivals/Jolly Man.webp", tier: "RARE" },
